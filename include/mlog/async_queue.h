@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string>
 
+namespace moss {
 namespace mlog {
 
 struct LogMessage {
@@ -46,4 +47,5 @@ private:
     static constexpr size_t kCacheLineSize = 64;
 };
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

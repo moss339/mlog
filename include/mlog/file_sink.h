@@ -6,6 +6,7 @@
 #include <mutex>
 #include <fstream>
 
+namespace moss {
 namespace mlog {
 
 class FileSink : public Sink {
@@ -32,4 +33,5 @@ private:
     int max_file_count_ = 5;
 };
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

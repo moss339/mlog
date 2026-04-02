@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 
+namespace moss {
 namespace mlog {
 
 class Sink;
@@ -27,4 +28,5 @@ struct LoggerConfig {
 
 bool load_config_from_file(const std::string& path, LoggerConfig& config);
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

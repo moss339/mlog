@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdint>
 
+namespace moss {
 namespace mlog {
 
 enum class LogLevel : uint8_t {
@@ -45,4 +46,5 @@ constexpr bool is_valid_level(LogLevel level) {
     return level >= LogLevel::Trace && level <= LogLevel::Off;
 }
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

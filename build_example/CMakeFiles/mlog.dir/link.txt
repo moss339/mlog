@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,libmlog.so.1 -o libmlog.so.1.0.0 CMakeFiles/mlog.dir/src/logger.cpp.o CMakeFiles/mlog.dir/src/console_sink.cpp.o CMakeFiles/mlog.dir/src/file_sink.cpp.o CMakeFiles/mlog.dir/src/formatter.cpp.o CMakeFiles/mlog.dir/src/async_queue.cpp.o CMakeFiles/mlog.dir/src/config.cpp.o CMakeFiles/mlog.dir/thirdparty/cJSON/cJSON.c.o 

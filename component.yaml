@@ -1,0 +1,14 @@
+name: mlog
+description: MOSS Logger
+
+source:
+  root: .
+
+dependencies:
+  local: []
+
+build:
+  type: library
+  cmake_options:
+    CMAKE_BUILD_TYPE: Release
+    MLOG_BUILD_EXAMPLES: OFF

@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 
+namespace moss {
 namespace mlog {
 
 static std::shared_ptr<Logger> default_logger;
@@ -36,4 +37,5 @@ inline std::shared_ptr<Logger> get_default_logger() {
     return default_logger;
 }
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

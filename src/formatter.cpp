@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <sstream>
 
+namespace moss {
 namespace mlog {
 
 DefaultFormatter::DefaultFormatter(const std::string& pattern)
@@ -39,4 +40,5 @@ std::string DefaultFormatter::format(const LogMessage& msg) {
     return oss.str();
 }
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

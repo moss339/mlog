@@ -1,0 +1,8 @@
+/mnt/data/workspace/moss/mlog/build_example/CMakeFiles/mlog.dir
+/mnt/data/workspace/moss/mlog/build_example/CMakeFiles/basic_example.dir
+/mnt/data/workspace/moss/mlog/build_example/CMakeFiles/edit_cache.dir
+/mnt/data/workspace/moss/mlog/build_example/CMakeFiles/rebuild_cache.dir
+/mnt/data/workspace/moss/mlog/build_example/CMakeFiles/list_install_components.dir
+/mnt/data/workspace/moss/mlog/build_example/CMakeFiles/install.dir
+/mnt/data/workspace/moss/mlog/build_example/CMakeFiles/install/local.dir
+/mnt/data/workspace/moss/mlog/build_example/CMakeFiles/install/strip.dir

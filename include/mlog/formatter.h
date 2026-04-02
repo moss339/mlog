@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 
+namespace moss {
 namespace mlog {
 
 class Formatter {
@@ -26,4 +27,5 @@ private:
     std::string pattern_;
 };
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

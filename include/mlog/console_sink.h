@@ -4,6 +4,7 @@
 #include <iostream>
 #include <mutex>
 
+namespace moss {
 namespace mlog {
 
 class ConsoleSink : public Sink {
@@ -18,4 +19,5 @@ private:
     std::mutex mutex_;
 };
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

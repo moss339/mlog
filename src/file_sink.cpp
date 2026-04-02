@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+namespace moss {
 namespace mlog {
 
 FileSink::FileSink(const std::string& file_path, LogLevel level)
@@ -91,4 +92,5 @@ void FileSink::rotate_file() {
     current_file_size_ = 0;
 }
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

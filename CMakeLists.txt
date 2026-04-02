@@ -1,4 +1,7 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.14)
+
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+
 project(mlog VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -8,13 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Threads REQUIRED)
 
 set(CJSON_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cJSON")
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CJSON_ROOT}
-)
-
-add_library(mlog SHARED
+set(MLOG_SOURCES
     src/logger.cpp
     src/console_sink.cpp
     src/file_sink.cpp
@@ -24,51 +21,33 @@ add_library(mlog SHARED
     ${CJSON_ROOT}/cJSON.c
 )
 
+if(BUILD_SHARED_LIBS)
+    add_library(mlog SHARED ${MLOG_SOURCES})
+    set_target_properties(mlog PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION 1
+        POSITION_INDEPENDENT_CODE ON
+    )
+else()
+    add_library(mlog STATIC ${MLOG_SOURCES})
+    set_target_properties(mlog PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION 1
+    )
+endif()
+
 target_include_directories(mlog PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CJSON_ROOT}
 )
 
 target_link_libraries(mlog PUBLIC
     Threads::Threads
 )
 
-set_target_properties(mlog PROPERTIES
-    VERSION ${PROJECT_VERSION}
-    SOVERSION 1
-    PUBLIC_HEADER "include/mlog/mlog.h"
-)
-
-option(MLOG_BUILD_TESTS "Build mlog tests" OFF)
-option(MLOG_BUILD_EXAMPLES "Build mlog examples" ON)
-
-if(MLOG_BUILD_TESTS)
-    add_executable(test_logger
-        test/test_logger.cpp
-    )
-    target_include_directories(test_logger PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    )
-    target_link_libraries(test_logger PRIVATE
-        mlog
-        Threads::Threads
-    )
-endif()
-
-if(MLOG_BUILD_EXAMPLES)
-    add_executable(basic_example
-        example/basic_example.cpp
-    )
-    target_include_directories(basic_example PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    )
-    target_link_libraries(basic_example PRIVATE
-        mlog
-        Threads::Threads
-    )
-endif()
-
 install(TARGETS mlog
-    LIBRARY DESTINATION lib
-    PUBLIC_HEADER DESTINATION include
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

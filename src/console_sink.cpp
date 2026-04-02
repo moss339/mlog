@@ -5,6 +5,7 @@
 #include <chrono>
 #include <sstream>
 
+namespace moss {
 namespace mlog {
 
 ConsoleSink::ConsoleSink(LogLevel level)
@@ -40,4 +41,5 @@ void ConsoleSink::flush() {
     std::cout.flush();
 }
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

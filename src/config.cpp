@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cJSON.h>
 
+namespace moss {
 namespace mlog {
 
 static bool parse_log_level(cJSON* obj, LogLevel& level) {
@@ -98,4 +99,5 @@ bool load_config_from_file(const std::string& path, LoggerConfig& config) {
     return true;
 }
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

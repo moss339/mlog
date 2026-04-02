@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 
+namespace moss {
 namespace mlog {
 
 static std::atomic<uint64_t> g_sequence{0};
@@ -188,4 +189,5 @@ void LoggerFactory::clear() {
     loggers_.clear();
 }
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

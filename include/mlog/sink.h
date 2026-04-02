@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 
+namespace moss {
 namespace mlog {
 
 class Sink {
@@ -24,4 +25,5 @@ protected:
 
 using SinkPtr = std::unique_ptr<Sink>;
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

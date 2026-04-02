@@ -3,6 +3,7 @@
 #include <new>
 #include <iostream>
 
+namespace moss {
 namespace mlog {
 
 AsyncQueue::AsyncQueue(size_t capacity)
@@ -63,4 +64,5 @@ void AsyncQueue::set_capacity(size_t capacity) {
     capacity_ = capacity;
 }
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss

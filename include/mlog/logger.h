@@ -13,6 +13,7 @@
 #include <mutex>
 #include <sstream>
 
+namespace moss {
 namespace mlog {
 
 template<typename T>
@@ -157,4 +158,5 @@ private:
     std::mutex mutex_;
 };
 
-} // namespace mlog
+}  // namespace mlog
+}  // namespace moss
