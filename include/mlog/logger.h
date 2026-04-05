@@ -51,24 +51,116 @@ static void format_to_string(std::ostringstream& oss, const std::string& fmt, si
     }
 }
 
+namespace detail {
+
+inline bool is_printf_flag(char c) {
+    return c == '-' || c == '+' || c == ' ' || c == '#' || c == '0';
+}
+
+inline bool is_printf_digit(char c) {
+    return (c >= '0' && c <= '9') || c == '.';
+}
+
+inline bool is_printf_specifier(char c) {
+    return c == 'd' || c == 'i' || c == 'u' || c == 'f' || c == 's' ||
+           c == 'c' || c == 'x' || c == 'X' || c == 'p' || c == 'e' ||
+           c == 'E' || c == 'g' || c == 'G' || c == 'o' || c == 'l';
+}
+
+inline std::string format_printf_value(const std::string& spec, const std::string& value) {
+    if (spec == "d" || spec == "i" || spec == "u" || spec == "o" || spec == "x" || spec == "X") {
+        try {
+            long long int_val = std::stoll(value);
+            char buf[64];
+            if (spec == "d" || spec == "i") snprintf(buf, sizeof(buf), "%lld", int_val);
+            else if (spec == "u") snprintf(buf, sizeof(buf), "%llu", (unsigned long long)int_val);
+            else if (spec == "o") snprintf(buf, sizeof(buf), "%llo", (unsigned long long)int_val);
+            else snprintf(buf, sizeof(buf), "%llx", (unsigned long long)int_val);
+            return std::string(buf);
+        } catch (...) { return value; }
+    } else if (spec == "f" || spec == "F" || spec == "e" || spec == "E" || spec == "g" || spec == "G") {
+        try {
+            double f_val = std::stod(value);
+            char buf[128];
+            snprintf(buf, sizeof(buf), ("%" + spec).c_str(), f_val);
+            return std::string(buf);
+        } catch (...) { return value; }
+    } else if (spec == "s") {
+        return value;
+    } else if (spec == "c") {
+        try {
+            char c = static_cast<char>(std::stoll(value));
+            return std::string(1, c);
+        } catch (...) { return value; }
+    }
+    return value;
+}
+
+}  // namespace detail
+
 template<typename... Args>
 static std::string vformat(const std::string& fmt, Args&&... args) {
     std::ostringstream oss;
-    size_t placeholder_count = 0;
-    std::string current;
     std::array<std::string, sizeof...(Args)> values = {format_arg(std::forward<Args>(args))...};
+    size_t arg_idx = 0;
+    size_t i = 0;
 
-    for (size_t i = 0; i < fmt.size(); ++i) {
+    while (i < fmt.size()) {
+        // Handle {} placeholder (native mlog style)
         if (fmt[i] == '{' && i + 1 < fmt.size() && fmt[i + 1] == '}') {
-            if (placeholder_count < values.size()) {
-                oss << values[placeholder_count++];
+            if (arg_idx < values.size()) {
+                oss << values[arg_idx++];
             } else {
                 oss << "{}";
             }
-            ++i;
-        } else {
-            oss << fmt[i];
+            i += 2;
+            continue;
         }
+
+        // Handle {N} indexed placeholder
+        if (fmt[i] == '{') {
+            size_t j = i + 1;
+            while (j < fmt.size() && fmt[j] != '}') ++j;
+            if (j < fmt.size()) {
+                size_t idx = 0;
+                try {
+                    idx = std::stoul(fmt.substr(i + 1, j - i - 1));
+                } catch (...) {}
+                if (idx < values.size()) {
+                    oss << values[idx];
+                    arg_idx = idx + 1;
+                }
+                i = j + 1;
+                continue;
+            }
+        }
+
+        // Handle %% escape
+        if (fmt[i] == '%' && i + 1 < fmt.size() && fmt[i + 1] == '%') {
+            oss << '%';
+            i += 2;
+            continue;
+        }
+
+        // Handle printf-style % specifier
+        if (fmt[i] == '%' && i + 1 < fmt.size()) {
+            size_t j = i + 1;
+            std::string spec;
+            // Collect flags, width, precision, length, then specifier
+            while (j < fmt.size() && detail::is_printf_flag(fmt[j])) { spec += fmt[j++]; }
+            while (j < fmt.size() && detail::is_printf_digit(fmt[j])) { spec += fmt[j++]; }
+            while (j < fmt.size() && (fmt[j] == 'h' || fmt[j] == 'l' || fmt[j] == 'L')) { spec += fmt[j++]; }
+            if (j < fmt.size() && detail::is_printf_specifier(fmt[j])) {
+                spec += fmt[j++];
+                if (arg_idx < values.size()) {
+                    oss << detail::format_printf_value(spec, values[arg_idx++]);
+                }
+                i = j;
+                continue;
+            }
+        }
+
+        oss << fmt[i++];
     }
 
     return oss.str();

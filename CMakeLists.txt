@@ -10,6 +10,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Threads REQUIRED)
 
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
 set(CJSON_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cJSON")
 set(MLOG_SOURCES
     src/logger.cpp
@@ -38,16 +41,36 @@ endif()
 
 target_include_directories(mlog PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CJSON_ROOT}>
     $<INSTALL_INTERFACE:include>
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CJSON_ROOT}
 )
 
-target_link_libraries(mlog PUBLIC
-    Threads::Threads
-)
+target_link_libraries(mlog PUBLIC Threads::Threads)
+
+# Export mlog target
+export(TARGETS mlog NAMESPACE mlog:: FILE mlogTargets.cmake)
 
 install(TARGETS mlog
+    EXPORT mlogTargets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlog
+)
+
+install(EXPORT mlogTargets
+    FILE mlogTargets.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mlog
+)
+
+install(DIRECTORY include/mlog/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlog)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/mlogConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/mlogConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mlog
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/mlogConfig.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mlog
 )
