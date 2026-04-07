@@ -102,28 +102,29 @@ void Logger::stop() {
 }
 
 void Logger::async_worker() {
+    std::unique_lock<std::mutex> lock(cv_mutex_);
     while (running_.load(std::memory_order_acquire)) {
-        if (queue_->empty()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            continue;
-        }
-
-        LogMessageNode* node = queue_->pop();
-        if (!node) continue;
-        if (!node->msg) {
-            delete node;
-            continue;
-        }
-
-        {
-            std::lock_guard<std::mutex> lock(sinks_mutex_);
-            for (auto& sink : sinks_) {
-                sink->write(*node->msg);
+        if (!queue_->empty()) {
+            lock.unlock();
+            LogMessageNode* node = queue_->pop();
+            if (node) {
+                if (node->msg) {
+                    std::lock_guard<std::mutex> slock(sinks_mutex_);
+                    for (auto& sink : sinks_) {
+                        sink->write(*node->msg);
+                    }
+                    delete node->msg;
+                }
+                delete node;
             }
+            lock.lock();
+            continue;
         }
-        delete node->msg;
-        delete node;
+
+        cv_.wait_for(lock, std::chrono::milliseconds(100),
+            [this] { return !running_.load(std::memory_order_acquire) || !queue_->empty(); });
     }
+    lock.unlock();
 
     // Drain remaining messages
     while (!queue_->empty()) {
@@ -149,6 +150,7 @@ void Logger::enqueue_message(LogMessage&& msg) {
     node->msg = new LogMessage(std::move(msg));
 
     queue_->push(node);
+    cv_.notify_one();
 }
 
 LoggerFactory& LoggerFactory::instance() {

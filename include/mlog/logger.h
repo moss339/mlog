@@ -11,6 +11,7 @@
 #include <atomic>
 #include <unordered_map>
 #include <mutex>
+#include <condition_variable>
 #include <sstream>
 
 namespace moss {
@@ -231,6 +232,8 @@ private:
     std::atomic<bool> running_;
     std::atomic<uint64_t> sequence_;
     std::mutex sinks_mutex_;
+    std::mutex cv_mutex_;
+    std::condition_variable cv_;
 };
 
 class LoggerFactory {

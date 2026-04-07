@@ -15,7 +15,7 @@
 namespace moss {
 namespace mlog {
 
-static std::shared_ptr<Logger> default_logger;
+inline static std::shared_ptr<Logger> default_logger;
 
 inline std::shared_ptr<Logger> init_default(const LoggerConfig& config) {
     default_logger = LoggerFactory::instance().create_logger(config);
